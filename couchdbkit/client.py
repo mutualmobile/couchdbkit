@@ -754,7 +754,7 @@ class Database(object):
 
 
     def put_attachment(self, doc, content, name=None, content_type=None,
-            content_length=None, headers=None):
+            content_length=None, headers=None, **params):
         """ Add attachement to a document. All attachments are streamed.
 
         @param doc: dict, document object
@@ -812,14 +812,14 @@ class Database(object):
 
         docid = resource.escape_docid(doc1['_id'])
         res = self.res(docid).put(name, payload=content,
-                headers=headers, rev=doc1['_rev']).json_body
+                headers=headers, rev=doc1['_rev'], **params).json_body
 
         if res['ok']:
             new_doc = self.get(doc1['_id'], rev=res['rev'])
             doc.update(new_doc)
         return res['ok']
 
-    def delete_attachment(self, doc, name, headers=None):
+    def delete_attachment(self, doc, name, headers=None, **params):
         """ delete attachement to the document
 
         @param doc: dict, document object in python
@@ -833,7 +833,7 @@ class Database(object):
         name = url_quote(name, safe="")
 
         res = self.res(docid).delete(name, rev=doc1['_rev'],
-                headers=headers).json_body
+                headers=headers, **params).json_body
         if res['ok']:
             new_doc = self.get(doc1['_id'], rev=res['rev'])
             doc.update(new_doc)
@@ -841,7 +841,7 @@ class Database(object):
 
 
     def fetch_attachment(self, id_or_doc, name, stream=False,
-            headers=None):
+            headers=None, **params):
         """ get attachment in a document
 
         @param id_or_doc: str or dict, doc id or document dict
@@ -855,11 +855,13 @@ class Database(object):
         else:
             doc, schema = _maybe_serialize(id_or_doc)
             docid = doc['_id']
+            if not 'rev' in params.keys():
+                params['rev'] = doc['_rev']
 
         docid = resource.escape_docid(docid)
         name = url_quote(name, safe="")
 
-        resp = self.res(docid).get(name, headers=headers)
+        resp = self.res(docid).get(name, headers=headers, **params)
         if stream:
             return resp.body_stream()
         return resp.body_string(charset="utf-8")
