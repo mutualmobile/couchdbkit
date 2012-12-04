@@ -763,6 +763,7 @@ class Database(object):
         @param content_type: string, mimetype of attachment.
         If you don't set it, it will be autodetected.
         @param content_lenght: int, size of attachment.
+        @param params, list of optionnal params.
 
         @return: bool, True if everything was ok.
 
@@ -824,6 +825,7 @@ class Database(object):
 
         @param doc: dict, document object in python
         @param name: name of attachement
+        @param params, list of optionnal params.
 
         @return: dict, with member ok set to True if delete was ok.
         """
@@ -847,6 +849,7 @@ class Database(object):
         @param id_or_doc: str or dict, doc id or document dict
         @param name: name of attachment default: default result
         @param stream: boolean, if True return a file object
+        @param params, list of optionnal params.
         @return: `restkit.httpc.Response` object
         """
 
